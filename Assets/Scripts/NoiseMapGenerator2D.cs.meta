@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: 8aad10bd62637da49be2d71e387ec95e
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - grassSprite: {fileID: 21300000, guid: 58531112be26cfc4b938fea5cdd09d91, type: 3}
+  - dirtSprite: {fileID: 21300000, guid: 0463254337c70084994328f1e0a1fcf4, type: 3}
+  - waterSprite: {fileID: 21300000, guid: 432ec87c0f31a994680f481675cb44da, type: 3}
+  - cellsParent: {instanceID: 0}
+  - player: {instanceID: 0}
+  - camera: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

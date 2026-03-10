@@ -1,48 +1,52 @@
+using Mono.Cecil;
 using UnityEngine;
-using UnityEngine.InputSystem.XR;
-using UnityEngine.Rendering;
+using UnityEngine.UIElements;
+using static UnityEngine.GraphicsBuffer;
 
+[RequireComponent(typeof(Rigidbody))]
 public class PlayerMovement : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    public GameObject Cam;
-    Rigidbody rb;
     public PlayerGroundCheck groundCheck;
-    public bool RequestJump =  false;
     public float spd = 10f;
-  
+    public float jumpForce = 5f;
+    
+
+    private Rigidbody rb;
+    private Vector3 moveInput;
+    private bool requestJump;
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+
+        rb.interpolation = RigidbodyInterpolation.Interpolate;
+        rb.freezeRotation = true;
     }
 
-    // Update is called once per frame,
-
-    private void Update()
+    void Update()
     {
-        if (groundCheck.isGrounded && Input.GetKeyDown(KeyCode.Space))
+        float h = Input.GetAxisRaw("Horizontal");
+        float v = Input.GetAxisRaw("Vertical");
+
+        moveInput = (transform.right * h + transform.forward * v).normalized;
+
+        if (groundCheck != null && groundCheck.isGrounded && Input.GetKeyDown(KeyCode.Space))
         {
-            RequestJump = true;     
+            requestJump = true;
         }
     }
+    
 
     void FixedUpdate()
     {
-        float h = Input.GetAxis("Horizontal");
-        float v = Input.GetAxis("Vertical");
+        Vector3 velocity = moveInput * spd;
+        velocity.y = rb.linearVelocity.y;
+        rb.linearVelocity = velocity;
 
-        Vector3 move = transform.right * h + transform.forward * v;
-        rb.linearVelocity = move * spd + new Vector3(0,rb.linearVelocity.y,0);
-        
-        
-        if (RequestJump) 
+        if (requestJump)
         {
-            rb.AddForce(Vector3.up * 5f, ForceMode.Impulse);
-            RequestJump = false;
+            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            requestJump = false;
         }
-    }
-    private void LateUpdate()
-    {
-        
     }
 }
