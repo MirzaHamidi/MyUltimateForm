@@ -6,7 +6,13 @@ public class NoiseMapGeneratorMesh : MonoBehaviour
 {
     [Header("Collision")]
     public bool[,] walkable;
-
+    public enum TileType
+    {
+        grass,
+        dirt,
+        water
+    }
+    public TileType[,] tileTypes;
     [Header("Plane Reference")]
     public GameObject plane;
 
@@ -67,6 +73,7 @@ public class NoiseMapGeneratorMesh : MonoBehaviour
 
         CachePlaneBounds();
         Generate();
+        
 
         if (player != null)
         {
@@ -77,7 +84,7 @@ public class NoiseMapGeneratorMesh : MonoBehaviour
             player.position = spawnPos;
         }
     }
-
+        
     void CachePlaneBounds()
     {
         Renderer r = plane.GetComponent<Renderer>();
@@ -93,6 +100,7 @@ public class NoiseMapGeneratorMesh : MonoBehaviour
     [ContextMenu("Generate")]
     public void Generate()
     {
+        tileTypes = new TileType[width, height];
         if (!plane)
         {
             Debug.LogError("Plane atanmadı.");
@@ -131,10 +139,29 @@ public class NoiseMapGeneratorMesh : MonoBehaviour
                 float ny = (y + oy) / scale;
                 float n = Mathf.PerlinNoise(nx, ny);
 
-                bool isWater = n < waterThreshold;
-                walkable[x, y] = !isWater;
+                TileType type;
+                int tileIndex;
 
-                int tileIndex = PickTileIndex(n);
+                if (n < waterThreshold)
+                {
+                    type = TileType.water;
+                    tileIndex = waterTileIndex;
+                    walkable[x, y] = false;
+                }
+                else if (n >= dirtThreshold)
+                {
+                    type = TileType.dirt;
+                    tileIndex = dirtTileIndex;
+                    walkable[x, y] = true;
+                }
+                else
+                {
+                    type = TileType.grass;
+                    tileIndex = grassTileIndex;
+                    walkable[x, y] = true;
+                }
+
+                tileTypes[x, y] = type;
 
                 float x0 = startX + x * cellSizeX;
                 float x1 = x0 + cellSizeX;
